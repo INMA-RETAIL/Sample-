@@ -1,11 +1,11 @@
-# Doc Dr. demo
+# Docu Dr. demo
 
-A try-it demo of Doc Dr., a receipt, invoice and estimate tool for small trades businesses.
+A try-it demo of Docu Dr., a receipt, invoice and estimate tool for small trades businesses.
 
 Open `index.html` in a browser. No build step and no outside files.
 
 ## What works
-- Switching between Receipt, Invoice and Estimate
+- Switching between Estimate, Invoice and Receipt
 - Typing in any field
 - Line items with sales tax by area (Spokane County, effective 01/01/2026) and whole-cent totals
 - Signature pads

@@ -6,11 +6,11 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="color-scheme" content="light">
-<meta name="apple-mobile-web-app-title" content="Doc Dr.">
+<meta name="apple-mobile-web-app-title" content="Docu Dr.">
 <link rel="apple-touch-icon" href="icon-D.png">
 <link rel="icon" type="image/png" href="icon-D.png">
 <link rel="manifest" href="manifest.json">
-<title>Estimate · Doc Dr. Demo</title>
+<title>Estimate · Docu Dr. Demo</title>
 <style>
 :root{
   --ink:#171A20; --gray:#5C5E62; --soft:#8E8E8E; --line:#D0D1D2; --hair:#EEEEEE;
@@ -145,7 +145,7 @@ dialog.lock::backdrop{background:rgba(23,26,32,.45)}
 
 <div class="bar">
   <div class="bar-in">
-    <div class="brandrow"><p class="mark">Doc Dr.</p><span class="demo-pill">Demo</span></div>
+    <div class="brandrow"><p class="mark">Docu Dr.</p><span class="demo-pill">Demo</span></div>
     <div class="seg" role="group" aria-label="Document type">
       <button type="button" data-m="Estimate">Estimate</button>
       <button type="button" data-m="Invoice">Invoice</button>
@@ -243,13 +243,13 @@ dialog.lock::backdrop{background:rgba(23,26,32,.45)}
 </dialog>
 
 <div class="printnote" aria-hidden="true">
-  <div class="m">Doc Dr.</div>
+  <div class="m">Docu Dr.</div>
   <p>This is the demo. Printing and PDFs are part of the full version.</p>
   <p id="printMail"></p>
 </div>
 
 <script>
-/* Doc Dr. demo. Form, line items, tax and signatures work in memory only.
+/* Docu Dr. demo. Form, line items, tax and signatures work in memory only.
    Saving, PDFs, sharing and backup are not included in this build. */
 (function(){
   'use strict';
@@ -335,7 +335,7 @@ dialog.lock::backdrop{background:rgba(23,26,32,.45)}
 
   /* document type */
   function applyMode(){
-    $('docTitle').textContent=mode; document.title=mode+' · Doc Dr. Demo';
+    $('docTitle').textContent=mode; document.title=mode+' · Docu Dr. Demo';
     [].forEach.call(document.querySelectorAll('.seg button'),function(b){ var on=b.dataset.m===mode; b.classList.toggle('on',on); b.setAttribute('aria-pressed',on?'true':'false'); });
     var cb=$('convBtn');
     if(mode==='Estimate'){ cb.hidden=false; cb.textContent='Make invoice →'; cb.dataset.lock='Make invoice'; }
@@ -428,13 +428,13 @@ dialog.lock::backdrop{background:rgba(23,26,32,.45)}
   /* full-version features: each opens the unlock note */
   var dlg=$('lockDlg');
   function mailto(feature){
-    var subject='Doc Dr. full version';
-    var body='Hi Jake,\n\nI tried the Doc Dr. demo'+(feature?' (I tapped '+feature+')':'')+' and would like the full version.\n\nName:\nBusiness:\nPhone:\n';
+    var subject='Docu Dr. full version';
+    var body='Hi Jake,\n\nI tried the Docu Dr. demo'+(feature?' (I tapped '+feature+')':'')+' and would like the full version.\n\nName:\nBusiness:\nPhone:\n';
     return 'mailto:'+UNLOCK_EMAIL+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
   }
   function lock(feature){
     if(document.activeElement) document.activeElement.blur();
-    $('lockText').textContent=feature+' is part of the full version of Doc Dr. This demo lets you try the form, line items, tax and signatures. Nothing here is saved.';
+    $('lockText').textContent=feature+' is part of the full version of Docu Dr. This demo lets you try the form, line items, tax and signatures. Nothing here is saved.';
     $('lockMail').href=mailto(feature);
     if(dlg.showModal) dlg.showModal(); else dlg.setAttribute('open','');
   }
