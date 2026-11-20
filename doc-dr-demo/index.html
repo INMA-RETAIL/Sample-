@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light">
+<meta name="apple-mobile-web-app-title" content="Doc Dr.">
+<link rel="apple-touch-icon" href="icon-D.png">
+<link rel="icon" type="image/png" href="icon-D.png">
+<link rel="manifest" href="manifest.json">
+<title>Estimate · Doc Dr. Demo</title>
+<style>
+:root{
+  --ink:#171A20; --gray:#5C5E62; --soft:#8E8E8E; --line:#D0D1D2; --hair:#EEEEEE;
+  --fill:#F4F4F4; --paper:#FFFFFF; --blue:#3E6AE1; --focus:#FFF9E0;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--fill);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+button,select{font-family:var(--font)}
+
+/* ---------- top bar ---------- */
+.bar{background:var(--paper);border-bottom:1px solid var(--hair);padding:calc(12px + env(safe-area-inset-top)) 16px 14px}
+.bar-in{max-width:8.5in;margin:0 auto;display:grid;gap:12px}
+.brandrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.mark{font-size:15px;font-weight:600;letter-spacing:.42em;text-transform:uppercase;margin:0}
+.demo-pill{font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--gray);border:1px solid var(--line);border-radius:999px;padding:5px 10px}
+.seg{display:flex;background:var(--fill);border-radius:6px;padding:4px;gap:4px}
+.seg button{flex:1;min-height:44px;border:0;border-radius:4px;background:transparent;color:var(--gray);font-size:14px;font-weight:500;cursor:pointer}
+.seg button.on{background:var(--paper);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+.actions button{min-height:44px;padding:0 18px;border:0;border-radius:4px;background:var(--fill);color:var(--ink);font-size:14px;font-weight:500;cursor:pointer}
+.actions button.pri{background:var(--blue);color:#fff}
+.actions button.conv{background:var(--ink);color:#fff}
+.actions button[hidden]{display:none}
+.hint{margin:0;font-size:12px;color:var(--soft);text-align:center}
+
+/* ---------- sheet ---------- */
+.sheet{position:relative;background:var(--paper);width:8.5in;max-width:100%;min-height:11in;margin:20px auto 40px;padding:.5in .55in;box-shadow:0 2px 24px rgba(0,0,0,.08);font-size:11pt;line-height:1.45}
+/* SAMPLE mark: drawn over the whole sheet so any screenshot carries it */
+.sheet::after{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='220'%3E%3Ctext x='160' y='120' text-anchor='middle' transform='rotate(-28 160 110)' font-family='Helvetica,Arial,sans-serif' font-size='52' font-weight='700' letter-spacing='10' fill='rgb(23,26,32)' fill-opacity='0.075'%3ESAMPLE%3C/text%3E%3C/svg%3E") repeat}
+[contenteditable]{min-width:1em;min-height:1.4em;outline:none;border-bottom:1px solid var(--line);padding:2px}
+[contenteditable]:focus{background:var(--focus);border-bottom-color:var(--ink)}
+[contenteditable]:empty::before{content:attr(data-ph);color:#A2A3A5}
+.ph{color:#A2A3A5}
+
+.lh{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;padding-bottom:14px;border-bottom:2px solid var(--ink);margin-bottom:20px}
+.biz{display:flex;align-items:center;gap:14px;border:0;background:none;padding:0;margin:0;text-align:left;color:inherit;cursor:pointer;min-height:44px}
+.logo-ph{width:64px;height:64px;flex:none;border:1.5px dashed var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:8.5px;font-weight:600;letter-spacing:.12em;line-height:1.35;text-transform:uppercase;color:var(--soft)}
+.biz .word{font-size:22px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;line-height:1.15;color:#A2A3A5}
+.biz .tag{font-size:10px;text-transform:uppercase;letter-spacing:.2em;color:#B5B6B8;margin-top:5px}
+.doc{text-align:right}
+.doc .t{font-size:22px;font-weight:500;letter-spacing:.32em;text-transform:uppercase}
+.doc .meta{margin-top:8px;font-size:11px;color:var(--gray);display:grid;gap:4px;justify-items:end}
+.doc .meta span{display:inline-block;min-width:130px;text-align:right}
+.doc .meta b{display:inline-block;min-width:80px;font-weight:600;color:var(--ink)}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:18px}
+.lbl{font-size:9px;text-transform:uppercase;letter-spacing:.24em;color:var(--gray);font-weight:600;margin-bottom:6px}
+.fld{display:block;width:100%;font-size:12.5px;margin-bottom:4px}
+.bar-h{background:var(--ink);color:#fff;font-size:10px;text-transform:uppercase;letter-spacing:.24em;font-weight:500;padding:8px 10px;border-radius:3px;margin:18px 0 8px}
+.svc{min-height:2.6in;border:1px solid var(--hair);border-left:2px solid var(--ink);padding:12px 14px;background:repeating-linear-gradient(#fff 0 27px,#E6E6E6 27px 28px);line-height:28px;white-space:pre-wrap}
+.svc[contenteditable]{border-bottom:1px solid var(--hair)}
+
+.totals{margin-top:18px;margin-left:auto;width:min(100%,330px);display:grid}
+.totals .row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:8px 10px;border-bottom:1px solid var(--hair);font-size:12.5px}
+.totals .row .l{font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:var(--gray);font-weight:600}
+.totals .row .v{display:flex;align-items:baseline;gap:2px;font-variant-numeric:tabular-nums;font-weight:600}
+.totals .row .v [contenteditable]{min-width:72px;text-align:right}
+.totals .row .v [contenteditable="false"]{border-bottom-color:transparent;background:none}
+.totals .row.bal{background:var(--fill);border-bottom:0;padding:12px 10px;margin-top:2px;border-radius:4px}
+.totals .row.bal .l{color:var(--ink)}
+.totals .row.bal .v{font-size:18px;font-weight:700}
+.totals .row.taxpick{border-bottom:0;padding:6px 0 4px}
+.taxpick select{width:100%;min-height:44px;font-size:14px;font-weight:500;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:0 10px}
+.taxtip{margin-top:6px;font-size:11px;color:var(--gray);line-height:1.5;text-align:right}
+.taxtip a{color:var(--ink);display:inline-block;padding:12px 0;margin:-12px 0}
+
+.est{display:none}
+body.mode-est .est{display:block}
+body.mode-est #payTotals,body.mode-est #stampWrap{display:none}
+.items{display:grid;border:1px solid var(--hair);border-radius:4px;overflow:hidden}
+.item{display:grid;grid-template-columns:1fr 96px 44px;gap:8px;align-items:center;padding:4px 6px 4px 10px;border-bottom:1px solid var(--hair);font-size:12.5px}
+.item:last-child{border-bottom:0}
+.item [contenteditable]{border-bottom:0;padding:10px 2px}
+.item .amt{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.item .x{width:44px;height:44px;border:0;border-radius:4px;background:transparent;font-size:15px;cursor:pointer;color:var(--soft)}
+.addrow{margin-top:8px;min-height:44px;padding:0 16px;font-size:13px;font-weight:500;background:var(--fill);color:var(--ink);border:0;border-radius:4px;cursor:pointer}
+.valid{margin-top:12px;font-size:10.5px;color:var(--gray);line-height:1.5;padding:8px 10px;border-left:2px solid var(--ink);background:var(--fill)}
+
+.stampwrap{text-align:right}
+.stamp{display:inline-flex;align-items:center;min-height:44px;margin-top:12px;padding:0 14px;border:2px solid var(--ink);border-radius:3px;font-size:11px;letter-spacing:.3em;text-transform:uppercase;font-weight:700;cursor:pointer;user-select:none;-webkit-user-select:none;background:none;color:var(--ink)}
+.stamp.off{opacity:.25;border-style:dashed}
+.note{margin-top:22px;font-size:10.5px;color:var(--gray);line-height:1.5}
+.sigs{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:26px}
+.sigs .s{padding-top:6px;font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:var(--gray);font-weight:600}
+.sig-pad{border:1px solid var(--ink);border-radius:4px;height:88px;position:relative;background:#fff;touch-action:none}
+.sig-pad canvas{width:100%;height:100%;display:block;border-radius:4px}
+.sig-hint{position:absolute;left:12px;bottom:8px;font-size:10px;color:#C4C5C7;pointer-events:none;letter-spacing:.18em;text-transform:uppercase}
+.sig-clear{position:absolute;right:0;top:0;min-height:44px;min-width:60px;font-size:11px;background:transparent;border:0;color:var(--gray);cursor:pointer}
+.foot{margin-top:28px;padding-top:10px;border-top:1px solid var(--hair);font-size:9px;color:#A2A3A5;text-align:center;letter-spacing:.04em}
+
+/* ---------- full-version dialog ---------- */
+dialog.lock{width:min(420px,calc(100vw - 32px));padding:0;border:0;border-radius:8px;background:var(--paper);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.25)}
+dialog.lock::backdrop{background:rgba(23,26,32,.45)}
+.lock-in{padding:24px 22px 20px;display:grid;gap:14px}
+.lock h2{margin:0;font-size:18px;font-weight:500;letter-spacing:.02em}
+.lock p{margin:0;font-size:14px;line-height:1.5;color:var(--gray)}
+.lock .go{display:flex;align-items:center;justify-content:center;min-height:48px;border-radius:4px;background:var(--blue);color:#fff;text-decoration:none;font-size:15px;font-weight:500;text-align:center;padding:0 16px}
+.lock .back{min-height:44px;border:0;border-radius:4px;background:var(--fill);color:var(--ink);font-size:14px;font-weight:500;cursor:pointer}
+
+/* ---------- print: the form never prints in the demo ---------- */
+.printnote{display:none}
+@media print{
+  @page{size:letter;margin:.75in}
+  body{background:#fff}
+  .bar,.sheet,dialog{display:none!important}
+  .printnote{display:block;font-family:var(--font);color:#171A20;text-align:center;padding-top:2.5in}
+  .printnote .m{font-size:16pt;font-weight:600;letter-spacing:.42em;text-transform:uppercase}
+  .printnote p{font-size:12pt;line-height:1.6;margin:18px 0 0}
+}
+
+@media screen and (max-width:600px){
+  .bar{padding:calc(10px + env(safe-area-inset-top)) 16px 12px}
+  .actions{display:grid;grid-template-columns:repeat(3,1fr)}
+  .actions button{padding:0 6px;font-size:13px}
+  .actions button.conv{grid-column:1 / -1}
+  .sheet{width:100%;min-height:0;margin:0 0 40px;padding:22px 16px 28px;box-shadow:none}
+  .two,.sigs{grid-template-columns:1fr}
+  .lh{flex-direction:column;align-items:flex-start}
+  .doc,.doc .meta{text-align:left;justify-items:start}
+  .doc .meta span{text-align:left}
+  .totals{width:100%}
+  .taxtip{text-align:left}
+  .fld{padding:10px 2px}
+}
+</style>
+</head>
+<body class="mode-est">
+
+<div class="bar">
+  <div class="bar-in">
+    <div class="brandrow"><p class="mark">Doc Dr.</p><span class="demo-pill">Demo</span></div>
+    <div class="seg" role="group" aria-label="Document type">
+      <button type="button" data-m="Receipt">Receipt</button>
+      <button type="button" data-m="Invoice">Invoice</button>
+      <button type="button" data-m="Estimate">Estimate</button>
+    </div>
+    <div class="actions">
+      <button type="button" class="pri" data-lock="Print and Save PDF">Print / PDF</button>
+      <button type="button" data-lock="Share PDF">Share PDF</button>
+      <button type="button" data-lock="Saved jobs (Open)">Open</button>
+      <button type="button" data-lock="Import contact">Import contact</button>
+      <button type="button" id="newBtn">+ New</button>
+      <button type="button" data-lock="Backup">Backup</button>
+      <button type="button" class="conv" id="convBtn" hidden></button>
+    </div>
+    <p class="hint">Tap any line and type. This demo does not save.</p>
+  </div>
+</div>
+
+<div class="sheet" id="sheet">
+  <div class="lh">
+    <button type="button" class="biz" data-lock="Business settings (your name and logo)">
+      <span class="logo-ph">Your logo here</span>
+      <span><span class="word" style="display:block">Your Business Name</span><span class="tag" style="display:block">Your tagline</span></span>
+    </button>
+    <div class="doc">
+      <div class="t" id="docTitle">Estimate</div>
+      <div class="meta">
+        <span>No. <b contenteditable data-k="num" data-ph="street no."></b></span>
+        <span>Date <b contenteditable data-k="date" data-ph="Nov 4, 2026"></b></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="two">
+    <div>
+      <div class="lbl">Bill to</div>
+      <div class="fld" contenteditable data-k="cname" data-ph="Customer name"></div>
+      <div class="fld" contenteditable data-k="cphone" data-ph="Phone" inputmode="tel"></div>
+      <div class="fld" contenteditable data-k="cemail" data-ph="Email" inputmode="email"></div>
+    </div>
+    <div>
+      <div class="lbl">Project address</div>
+      <div class="fld" contenteditable data-k="addr1" data-ph="Street"></div>
+      <div class="fld" contenteditable data-k="addr2" data-ph="City, State ZIP"></div>
+    </div>
+  </div>
+
+  <div class="bar-h" id="svcHead">Project scope / notes</div>
+  <div class="svc" id="svcBox" contenteditable data-k="svc" data-ph="Describe the scope: what gets done, where, and with what products."></div>
+
+  <div class="est" id="estBlock">
+    <div class="bar-h">Line items</div>
+    <div class="items" id="items"></div>
+    <button type="button" class="addrow" id="addRow">+ Add line</button>
+    <div class="totals">
+      <div class="row"><span class="l">Subtotal</span><span class="v">$<span id="estSub">0.00</span></span></div>
+      <div class="row"><span class="l" id="taxLbl">Tax</span><span class="v">$<span contenteditable inputmode="decimal" data-k="tax" data-ph="0.00"></span></span></div>
+      <div class="row taxpick"><select id="taxArea" aria-label="Sales tax area"></select></div>
+      <div class="row bal"><span class="l">Estimate total</span><span class="v">$<span id="estTotal">0.00</span></span></div>
+    </div>
+    <div class="taxtip">Not sure which area? <a href="https://webgis.dor.wa.gov/taxratelookup/SalesTax.aspx" target="_blank" rel="noopener">Look up the job address</a>.</div>
+    <div class="valid">Good for 30 days from the date above. Price covers the scope described. Changes to the scope may change the price.</div>
+  </div>
+
+  <div class="totals" id="payTotals">
+    <div class="row"><span class="l">Total</span><span class="v">$<span contenteditable inputmode="decimal" data-k="total" data-ph="0.00"></span></span></div>
+    <div class="row"><span class="l">Paid</span><span class="v">$<span contenteditable inputmode="decimal" data-k="paid" data-ph="0.00"></span></span></div>
+    <div class="row"><span class="l">Method</span><span class="v"><span contenteditable data-k="method" data-ph="Cash / Check / Card"></span></span></div>
+    <div class="row bal"><span class="l">Balance due</span><span class="v">$<span id="bal">0.00</span></span></div>
+  </div>
+  <div class="stampwrap" id="stampWrap"><button type="button" class="stamp off" id="stamp">Paid in full</button></div>
+
+  <div class="note" contenteditable data-k="note" data-ph="Notes (optional)"></div>
+
+  <div class="sigs">
+    <div>
+      <div class="sig-pad"><canvas id="sigBiz"></canvas><span class="sig-hint">Sign here</span><button type="button" class="sig-clear" data-clear="sigBiz">Clear</button></div>
+      <div class="s">Your name · Your Business Name</div>
+    </div>
+    <div>
+      <div class="sig-pad"><canvas id="sigCust"></canvas><span class="sig-hint">Sign here</span><button type="button" class="sig-clear" data-clear="sigCust">Clear</button></div>
+      <div class="s">Customer</div>
+    </div>
+  </div>
+
+  <div class="foot"><b>Your Business Name</b> · City, State · License no. · Website · Phone · Email</div>
+</div>
+
+<dialog id="lockDlg" class="lock" aria-labelledby="lockTitle">
+  <div class="lock-in">
+    <h2 id="lockTitle">Part of the full version</h2>
+    <p id="lockText"></p>
+    <a class="go" id="lockMail" href="#">Email Jake to unlock all features</a>
+    <button type="button" class="back" id="lockBack">Back to the demo</button>
+  </div>
+</dialog>
+
+<div class="printnote" aria-hidden="true">
+  <div class="m">Doc Dr.</div>
+  <p>This is the demo. Printing and PDFs are part of the full version.</p>
+  <p id="printMail"></p>
+</div>
+
+<script>
+/* Doc Dr. demo. Form, line items, tax and signatures work in memory only.
+   Saving, PDFs, sharing, contact import and backup are not included in this build. */
+(function(){
+  'use strict';
+  var UNLOCK_EMAIL='jake@inmagent.com';
+
+  /* Spokane County combined sales tax, effective 01/01/2026. [code, area, rate %] */
+  var TAX_RATES=[
+    ['3201','Airway Heights',9.2],
+    ['3202','Cheney',8.9],
+    ['3203','Deer Park',8.1],
+    ['3204','Fairfield',8.1],
+    ['3215','Kalispel Tribe - Airway Heights',9.2],
+    ['3205','Latah',8.1],
+    ['3212','Liberty Lake',9.0],
+    ['3206','Medical Lake',8.9],
+    ['3207','Millwood',8.9],
+    ['3208','Rockford',8.1],
+    ['3209','Spangle',8.1],
+    ['3210','Spokane (City)',9.1],
+    ['3213','Spokane Valley',9.0],
+    ['3200','Unincorporated Areas',8.1],
+    ['3232','Unincorporated Areas - PTBA',8.9],
+    ['3211','Waverly',8.1]
+  ];
+  function taxRate(code){ for(var i=0;i<TAX_RATES.length;i++){ if(TAX_RATES[i][0]===code) return TAX_RATES[i]; } return null; }
+
+  function today(){ return new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+  var SAMPLE={
+    mode:'Estimate', date:today(), taxArea:'3210',
+    cname:'Alex Morgan', cphone:'(509) 555-0142', cemail:'alex.morgan@example.com',
+    addr1:'1418 W Example Ave', addr2:'Spokane, WA 99201',
+    svc:'Replace the back deck. Remove the old boards and haul them away, check and repair the framing, and install composite decking with matching trim.',
+    total:'12,405.22', paid:'', method:'', note:'',
+    items:[
+      {d:'Remove and haul away old deck boards',a:'1,250.00'},
+      {d:'Framing repair, lumber and hardware',a:'2,180.50'},
+      {d:'Composite decking and trim, 320 sq ft',a:'6,840.00'},
+      {d:'Labor, 4 days',a:'1,100.00'}
+    ]
+  };
+
+  var $=function(id){ return document.getElementById(id); };
+  var F=document.querySelectorAll('[data-k]'), taxSel=$('taxArea');
+  var MODES=['Receipt','Invoice','Estimate'], mode='Estimate', items=[], state={};
+
+  function num(v){ v=String(v||'').replace(/[^0-9.\-]/g,''); var n=parseFloat(v); return isNaN(n)?0:n; }
+  function fmt(n){ return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function cents(v){ return Math.round(num(v)*100); }
+  function fieldEl(k){ return document.querySelector('[data-k="'+k+'"]'); }
+  function get(k){ var el=fieldEl(k); return el?el.textContent.trim():''; }
+  function set(k,v){ var el=fieldEl(k); if(el) el.textContent=v; }
+
+  /* Whole-cent math. Rate kept in tenths of a percent so 9.1 stays exact. */
+  function estMath(its,area,typed){
+    var sub=0; its.forEach(function(it){ sub+=cents(it.a); });
+    var r=taxRate(area), tax=0;
+    if(r) tax=Math.round(sub*Math.round(r[2]*10)/1000); else if(area==='other') tax=cents(typed);
+    return {sub:sub,tax:tax,total:sub+tax,rate:r};
+  }
+
+  function calc(){
+    var t=num(get('total')), p=num(get('paid')), b=Math.max(0,Math.round(t*100)-Math.round(p*100));
+    $('bal').textContent=fmt(b/100);
+    if(state.stampAuto!==false) setStamp(t>0 && b===0);
+    var taxEl=fieldEl('tax'), lbl=$('taxLbl'), area=state.taxArea||'';
+    var e=estMath(items,area,taxEl.textContent);
+    if(area==='other'){ taxEl.setAttribute('contenteditable','true'); lbl.textContent='Tax'; }
+    else{
+      taxEl.setAttribute('contenteditable','false'); taxEl.textContent=fmt(e.tax/100);
+      lbl.textContent=e.rate?('Tax '+e.rate[2].toFixed(1)+'% · '+e.rate[1]):(area==='none'?'Tax · not taxed':'Tax');
+    }
+    $('estSub').textContent=fmt(e.sub/100); $('estTotal').textContent=fmt(e.total/100);
+  }
+
+  /* tax area picker */
+  (function(){
+    function opt(v,t){ var o=document.createElement('option'); o.value=v; o.textContent=t; taxSel.appendChild(o); }
+    opt('','Pick the tax area');
+    TAX_RATES.forEach(function(r){ opt(r[0],r[1]+' · '+r[2].toFixed(1)+'%'); });
+    opt('other','Other (type the tax amount)'); opt('none','No sales tax');
+  })();
+  taxSel.addEventListener('change',function(){ state.taxArea=taxSel.value; calc(); });
+
+  /* document type */
+  function applyMode(){
+    $('docTitle').textContent=mode; document.title=mode+' · Doc Dr. Demo';
+    [].forEach.call(document.querySelectorAll('.seg button'),function(b){ var on=b.dataset.m===mode; b.classList.toggle('on',on); b.setAttribute('aria-pressed',on?'true':'false'); });
+    var cb=$('convBtn');
+    if(mode==='Estimate'){ cb.hidden=false; cb.textContent='Make invoice →'; cb.dataset.lock='Make invoice'; }
+    else if(mode==='Invoice'){ cb.hidden=false; cb.textContent='Mark paid → receipt'; cb.dataset.lock='Mark paid'; }
+    else cb.hidden=true;
+    document.body.classList.toggle('mode-est',mode==='Estimate');
+    var h=$('svcHead'), b=$('svcBox');
+    if(mode==='Estimate'){ h.textContent='Project scope / notes'; b.dataset.ph='Describe the scope: what gets done, where, and with what products.'; }
+    else{ h.textContent='Service'; b.dataset.ph='Describe the service performed, the product, and anything the customer should keep for their records.'; }
+  }
+  [].forEach.call(document.querySelectorAll('.seg button'),function(b){
+    b.addEventListener('click',function(){ if(b.dataset.m!==mode){ mode=b.dataset.m; applyMode(); calc(); } });
+  });
+
+  /* line items */
+  function pastePlain(e){ e.preventDefault(); document.execCommand('insertText',false,(e.clipboardData||window.clipboardData).getData('text')); }
+  function renderItems(){
+    var box=$('items'); box.textContent='';
+    items.forEach(function(it,i){
+      var row=document.createElement('div'); row.className='item';
+      var d=document.createElement('div'); d.contentEditable='true'; d.dataset.ph='Line item'; d.textContent=it.d||'';
+      var a=document.createElement('div'); a.className='amt'; a.contentEditable='true'; a.setAttribute('inputmode','decimal'); a.dataset.ph='0.00'; a.textContent=it.a||'';
+      var x=document.createElement('button'); x.type='button'; x.className='x'; x.setAttribute('aria-label','Remove line'); x.textContent='✕';
+      d.addEventListener('input',function(){ if(!d.textContent) d.textContent=''; items[i].d=d.textContent; });
+      a.addEventListener('input',function(){ if(!a.textContent) a.textContent=''; items[i].a=a.textContent; calc(); });
+      a.addEventListener('blur',function(){ if(a.textContent.trim()){ a.textContent=fmt(num(a.textContent)); items[i].a=a.textContent; } calc(); });
+      [d,a].forEach(function(el){
+        el.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); if(el===d) a.focus(); else if(i===items.length-1) addItem(); else box.children[i+1].children[0].focus(); } });
+        el.addEventListener('paste',pastePlain);
+      });
+      x.addEventListener('click',function(){ items.splice(i,1); if(!items.length) items.push({d:'',a:''}); renderItems(); calc(); });
+      row.appendChild(d); row.appendChild(a); row.appendChild(x); box.appendChild(row);
+    });
+  }
+  function addItem(){ items.push({d:'',a:''}); renderItems(); calc(); $('items').lastChild.children[0].focus(); }
+  $('addRow').addEventListener('click',addItem);
+
+  /* fields */
+  function numFromAddr(){ if(state.numManual) return; var m=get('addr1').match(/^\s*(\d+)/); if(m) set('num',m[1]); }
+  F.forEach(function(el){
+    var k=el.dataset.k;
+    el.addEventListener('input',function(){
+      if(!el.textContent) el.textContent='';
+      if(k==='num') state.numManual=!!el.textContent.trim();
+      if(k==='addr1') numFromAddr();
+      calc();
+    });
+    el.addEventListener('blur',function(){ if((k==='total'||k==='paid'||k==='tax') && el.textContent.trim()){ el.textContent=fmt(num(el.textContent)); calc(); } });
+    el.addEventListener('keydown',function(e){ if(e.key==='Enter' && k!=='svc' && k!=='note'){ e.preventDefault(); el.blur(); } });
+    el.addEventListener('paste',pastePlain);
+  });
+
+  /* paid stamp */
+  function setStamp(on){ $('stamp').classList.toggle('off',!on); }
+  $('stamp').addEventListener('click',function(){ var on=$('stamp').classList.contains('off'); state.stampAuto=false; setStamp(on); });
+
+  /* load a document into the page (memory only) */
+  function show(s){
+    state={taxArea:s.taxArea||'', numManual:false};
+    F.forEach(function(el){ el.textContent=s[el.dataset.k]||''; });
+    mode=s.mode||'Estimate';
+    items=(s.items&&s.items.length)?s.items.map(function(it){ return {d:it.d,a:it.a}; }):[{d:'',a:''}];
+    taxSel.value=state.taxArea; renderItems(); applyMode(); numFromAddr(); calc();
+  }
+  $('newBtn').addEventListener('click',function(){
+    if(!confirm('Clear the form and start a blank '+mode.toLowerCase()+'? Reload the page to bring the sample back.')) return;
+    show({mode:mode,date:today()}); clearSig('sigBiz'); clearSig('sigCust');
+  });
+
+  /* signatures: drawn on screen, never stored */
+  function initSig(id){
+    var c=$(id), hint=c.parentNode.querySelector('.sig-hint'), drawing=false, last=null;
+    function size(){
+      var r=c.getBoundingClientRect(), dpr=window.devicePixelRatio||1, keep=c._ctx&&c._inked?c.toDataURL():null;
+      c.width=Math.max(1,r.width*dpr); c.height=Math.max(1,r.height*dpr);
+      var ctx=c.getContext('2d'); ctx.scale(dpr,dpr); ctx.lineWidth=2.2; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.strokeStyle='#12233a'; c._ctx=ctx;
+      if(keep){ var im=new Image(); im.onload=function(){ var rr=c.getBoundingClientRect(); ctx.drawImage(im,0,0,rr.width,rr.height); }; im.src=keep; }
+    }
+    size(); window.addEventListener('resize',size);
+    function pt(e){ var r=c.getBoundingClientRect(), t=e.touches?e.touches[0]:e; return {x:t.clientX-r.left,y:t.clientY-r.top}; }
+    function down(e){ drawing=true; last=pt(e); hint.style.display='none'; e.preventDefault(); }
+    function move(e){ if(!drawing) return; var p=pt(e), ctx=c._ctx; ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke(); last=p; c._inked=true; e.preventDefault(); }
+    function up(){ drawing=false; }
+    c.addEventListener('mousedown',down); c.addEventListener('mousemove',move); window.addEventListener('mouseup',up);
+    c.addEventListener('touchstart',down,{passive:false}); c.addEventListener('touchmove',move,{passive:false}); c.addEventListener('touchend',up);
+  }
+  function clearSig(id){ var c=$(id); if(!c._ctx) return; c._ctx.clearRect(0,0,c.width,c.height); c._inked=false; c.parentNode.querySelector('.sig-hint').style.display=''; }
+  [].forEach.call(document.querySelectorAll('[data-clear]'),function(b){ b.addEventListener('click',function(){ clearSig(b.dataset.clear); }); });
+
+  /* full-version features: each opens the unlock note */
+  var dlg=$('lockDlg');
+  function mailto(feature){
+    var subject='Doc Dr. full version';
+    var body='Hi Jake,\n\nI tried the Doc Dr. demo'+(feature?' (I tapped '+feature+')':'')+' and would like the full version.\n\nName:\nBusiness:\nPhone:\n';
+    return 'mailto:'+UNLOCK_EMAIL+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  }
+  function lock(feature){
+    if(document.activeElement) document.activeElement.blur();
+    $('lockText').textContent=feature+' is part of the full version of Doc Dr. This demo lets you try the form, line items, tax and signatures. Nothing here is saved.';
+    $('lockMail').href=mailto(feature);
+    if(dlg.showModal) dlg.showModal(); else dlg.setAttribute('open','');
+  }
+  function closeLock(){ if(dlg.close) dlg.close(); else dlg.removeAttribute('open'); }
+  document.addEventListener('click',function(e){ var b=e.target.closest('[data-lock]'); if(b && !b.hidden) lock(b.dataset.lock); });
+  $('lockBack').addEventListener('click',closeLock);
+  dlg.addEventListener('click',function(e){ if(e.target===dlg) closeLock(); });
+  /* Ctrl/Cmd+P opens the note; the browser's own print menu gets the print note instead of the form */
+  document.addEventListener('keydown',function(e){ if((e.ctrlKey||e.metaKey) && (e.key==='p'||e.key==='P')){ e.preventDefault(); lock('Print and Save PDF'); } });
+  $('printMail').textContent='Email Jake to unlock all features: '+UNLOCK_EMAIL;
+
+  show(SAMPLE);
+  window.addEventListener('load',function(){ initSig('sigBiz'); initSig('sigCust'); });
+})();
+</script>
+</body>
+</html>

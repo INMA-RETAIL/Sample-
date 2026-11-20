@@ -1,0 +1,12 @@
+{
+  "name": "Doc Dr. Demo",
+  "short_name": "Doc Dr.",
+  "start_url": "./",
+  "display": "browser",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FFFFFF",
+  "orientation": "any",
+  "icons": [
+    { "src": "icon-D.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
