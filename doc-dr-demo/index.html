@@ -126,8 +126,9 @@ dialog.lock::backdrop{background:rgba(23,26,32,.45)}
 
 @media screen and (max-width:600px){
   .bar{padding:calc(10px + env(safe-area-inset-top)) 16px 12px}
-  .actions{display:grid;grid-template-columns:repeat(3,1fr)}
-  .actions button{padding:0 6px;font-size:13px}
+  .actions{display:grid;grid-template-columns:repeat(6,1fr)}
+  .actions button{grid-column:span 2;padding:0 6px;font-size:13px}
+  .actions button:nth-child(4),.actions button:nth-child(5){grid-column:span 3}
   .actions button.conv{grid-column:1 / -1}
   .sheet{width:100%;min-height:0;margin:0 0 40px;padding:22px 16px 28px;box-shadow:none}
   .two,.sigs{grid-template-columns:1fr}
@@ -154,7 +155,6 @@ dialog.lock::backdrop{background:rgba(23,26,32,.45)}
       <button type="button" class="pri" data-lock="Print and Save PDF">Print / PDF</button>
       <button type="button" data-lock="Share PDF">Share PDF</button>
       <button type="button" data-lock="Saved jobs (Open)">Open</button>
-      <button type="button" data-lock="Import contact">Import contact</button>
       <button type="button" id="newBtn">+ New</button>
       <button type="button" data-lock="Backup">Backup</button>
       <button type="button" class="conv" id="convBtn" hidden></button>
@@ -250,7 +250,7 @@ dialog.lock::backdrop{background:rgba(23,26,32,.45)}
 
 <script>
 /* Doc Dr. demo. Form, line items, tax and signatures work in memory only.
-   Saving, PDFs, sharing, contact import and backup are not included in this build. */
+   Saving, PDFs, sharing and backup are not included in this build. */
 (function(){
   'use strict';
   var UNLOCK_EMAIL='jake@inmagent.com';

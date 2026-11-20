@@ -12,7 +12,7 @@ Open `index.html` in a browser. No build step and no outside files.
 - Paid in full stamp
 
 ## What does not
-Print / PDF, Share PDF, Open, Import contact, Backup, Make invoice, Mark paid and business settings
+Print / PDF, Share PDF, Open, Backup, Make invoice, Mark paid and business settings
 open a note with an "Email Jake to unlock all features" link.
 
 The code for those features is not in this build. Nothing is saved; reloading the page brings back
