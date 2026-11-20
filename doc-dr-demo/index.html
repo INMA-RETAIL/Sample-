@@ -146,9 +146,9 @@ dialog.lock::backdrop{background:rgba(23,26,32,.45)}
   <div class="bar-in">
     <div class="brandrow"><p class="mark">Doc Dr.</p><span class="demo-pill">Demo</span></div>
     <div class="seg" role="group" aria-label="Document type">
-      <button type="button" data-m="Receipt">Receipt</button>
-      <button type="button" data-m="Invoice">Invoice</button>
       <button type="button" data-m="Estimate">Estimate</button>
+      <button type="button" data-m="Invoice">Invoice</button>
+      <button type="button" data-m="Receipt">Receipt</button>
     </div>
     <div class="actions">
       <button type="button" class="pri" data-lock="Print and Save PDF">Print / PDF</button>
@@ -293,7 +293,7 @@ dialog.lock::backdrop{background:rgba(23,26,32,.45)}
 
   var $=function(id){ return document.getElementById(id); };
   var F=document.querySelectorAll('[data-k]'), taxSel=$('taxArea');
-  var MODES=['Receipt','Invoice','Estimate'], mode='Estimate', items=[], state={};
+  var MODES=['Estimate','Invoice','Receipt'], mode='Estimate', items=[], state={};
 
   function num(v){ v=String(v||'').replace(/[^0-9.\-]/g,''); var n=parseFloat(v); return isNaN(n)?0:n; }
   function fmt(n){ return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
